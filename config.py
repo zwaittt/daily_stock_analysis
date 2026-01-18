@@ -35,6 +35,7 @@ class Config:
     feishu_app_id: Optional[str] = None
     feishu_app_secret: Optional[str] = None
     feishu_folder_token: Optional[str] = None  # 目标文件夹 Token
+    feishu_space_id: Optional[str] = None  # 目标文件夹 Token
 
     # === 数据源 API Token ===
     tushare_token: Optional[str] = None
@@ -184,6 +185,7 @@ class Config:
             feishu_app_id=os.getenv('FEISHU_APP_ID'),
             feishu_app_secret=os.getenv('FEISHU_APP_SECRET'),
             feishu_folder_token=os.getenv('FEISHU_FOLDER_TOKEN'),
+            feishu_space_id=os.getenv('FEISHU_SPACE_ID'),
             tushare_token=os.getenv('TUSHARE_TOKEN'),
             gemini_api_key=os.getenv('GEMINI_API_KEY'),
             gemini_model=os.getenv('GEMINI_MODEL', 'gemini-3-flash-preview'),

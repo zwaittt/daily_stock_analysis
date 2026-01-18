@@ -80,7 +80,7 @@ jobs:
           FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
           FEISHU_FOLDER_TOKEN: ${{ secrets.FEISHU_FOLDER_TOKEN }}
-
+          FEISHU_SPACE_ID: ${{ secrets.FEISHU_SPACE_ID }}
           
           # 自选股列表 (从 secrets 或使用默认值)
           STOCK_LIST: ${{ secrets.STOCK_LIST || '600519' }}

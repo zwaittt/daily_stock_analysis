@@ -139,6 +139,7 @@
 | `FEISHU_APP_ID` | 飞书应用 ID | 可选 |
 | `FEISHU_APP_SECRET` | 飞书应用 Secret | 可选 |
 | `FEISHU_FOLDER_TOKEN` | 飞书云盘文件夹 Token | 可选 |
+| `FEISHU_SPACE_ID` | 飞书知识库 ID | 可选，如果配置了，则会创建知识库文档，按月归档节点 |
 
 > 飞书云文档配置步骤：
 > 1. 在 [飞书开发者后台](https://open.feishu.cn/app) 创建应用
