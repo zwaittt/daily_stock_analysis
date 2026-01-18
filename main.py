@@ -726,6 +726,12 @@ def parse_arguments() -> argparse.Namespace:
         help='启动本地配置 WebUI'
     )
     
+    parser.add_argument(
+        '--recommend',
+        action='store_true',
+        help='运行智能选股推荐（识别市场主线+龙头股+资金流向）'
+    )
+    
     return parser.parse_args()
 
 
@@ -915,6 +921,36 @@ def main() -> int:
             logger.error(f"启动 WebUI 失败: {e}")
 
     try:
+        # 模式0: 智能选股推荐
+        if args.recommend:
+            logger.info("模式: 智能选股推荐")
+            from stock_recommender import StockRecommender
+            
+            recommender = StockRecommender()
+            report = recommender.run_daily_recommendation()
+            
+            # 保存报告
+            notifier = NotificationService()
+            date_str = datetime.now().strftime('%Y%m%d')
+            filepath = notifier.save_report_to_file(
+                f"# 🎯 智能选股推荐\n\n{report}",
+                f"stock_recommend_{date_str}.md"
+            )
+            logger.info(f"选股推荐报告已保存: {filepath}")
+            
+            # 推送
+            if not args.no_notify and notifier.is_available():
+                success = notifier.send(report)
+                if success:
+                    logger.info("选股推荐推送成功")
+                else:
+                    logger.warning("选股推荐推送失败")
+            
+            print("\n" + "=" * 60)
+            print(report)
+            print("=" * 60)
+            return 0
+        
         # 模式1: 仅大盘复盘
         if args.market_review:
             logger.info("模式: 仅大盘复盘")
