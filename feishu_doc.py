@@ -118,7 +118,7 @@ class FeishuDocManager:
         if not list_response.success():
             print(f"搜索文档失败: {list_response.code} - {list_response.msg} - {list_response.error}")
             return None
-        title = f"{datetime.date.today().year}年{datetime.date.today().month + 1}月归档"
+        title = f"{datetime.date.today().year}年{datetime.date.today().month}月归档"
         for node in list_response.data.items:
             if node.title == title:
                 logger.info(f"父节点已存在: {title} (Token: {node.node_token})")
