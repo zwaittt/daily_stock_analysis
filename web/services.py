@@ -17,7 +17,10 @@ import logging
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Union
+
+from src.enums import ReportType
+from bot.models import BotMessage
 
 logger = logging.getLogger(__name__)
 
@@ -166,28 +169,39 @@ class AnalysisService:
             )
         return self._executor
     
-    def submit_analysis(self, code: str) -> Dict[str, Any]:
+    def submit_analysis(
+        self, 
+        code: str, 
+        report_type: Union[ReportType, str] = ReportType.SIMPLE,
+        source_message: Optional[BotMessage] = None
+    ) -> Dict[str, Any]:
         """
         提交异步分析任务
         
         Args:
             code: 股票代码
+            report_type: 报告类型枚举
             
         Returns:
             任务信息字典
         """
+        # 确保 report_type 是枚举类型
+        if isinstance(report_type, str):
+            report_type = ReportType.from_str(report_type)
+        
         task_id = f"{code}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}"
         
         # 提交到线程池
-        self.executor.submit(self._run_analysis, code, task_id)
+        self.executor.submit(self._run_analysis, code, task_id, report_type, source_message)
         
-        logger.info(f"[AnalysisService] 已提交股票 {code} 的分析任务, task_id={task_id}")
+        logger.info(f"[AnalysisService] 已提交股票 {code} 的分析任务, task_id={task_id}, report_type={report_type.value}")
         
         return {
             "success": True,
             "message": "分析任务已提交，将异步执行并推送通知",
             "code": code,
-            "task_id": task_id
+            "task_id": task_id,
+            "report_type": report_type.value
         }
     
     def get_task_status(self, task_id: str) -> Optional[Dict[str, Any]]:
@@ -203,11 +217,22 @@ class AnalysisService:
         tasks.sort(key=lambda x: x.get('start_time', ''), reverse=True)
         return tasks[:limit]
     
-    def _run_analysis(self, code: str, task_id: str) -> Dict[str, Any]:
+    def _run_analysis(
+        self, 
+        code: str, 
+        task_id: str, 
+        report_type: ReportType = ReportType.SIMPLE,
+        source_message: Optional[BotMessage] = None
+    ) -> Dict[str, Any]:
         """
         执行单只股票分析
         
         内部方法，在线程池中运行
+        
+        Args:
+            code: 股票代码
+            task_id: 任务ID
+            report_type: 报告类型枚举
         """
         # 初始化任务状态
         with self._tasks_lock:
@@ -217,25 +242,31 @@ class AnalysisService:
                 "status": "running",
                 "start_time": datetime.now().isoformat(),
                 "result": None,
-                "error": None
+                "error": None,
+                "report_type": report_type.value
             }
         
         try:
             # 延迟导入避免循环依赖
-            from config import get_config
+            from src.config import get_config
             from main import StockAnalysisPipeline
             
             logger.info(f"[AnalysisService] 开始分析股票: {code}")
             
             # 创建分析管道
             config = get_config()
-            pipeline = StockAnalysisPipeline(config=config, max_workers=1)
+            pipeline = StockAnalysisPipeline(
+                config=config,
+                max_workers=1,
+                source_message=source_message
+            )
             
             # 执行单只股票分析（启用单股推送）
             result = pipeline.process_single_stock(
                 code=code,
                 skip_analysis=False,
-                single_stock_notify=True
+                single_stock_notify=True,
+                report_type=report_type
             )
             
             if result:

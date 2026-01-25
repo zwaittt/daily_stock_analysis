@@ -6,8 +6,8 @@ import lark_oapi as lark
 from lark_oapi.api.docx.v1 import *
 from lark_oapi.api.wiki.v2 import CreateSpaceNodeRequest, ListSpaceNodeRequest, Node
 from typing import List, Dict, Any, Optional
-from config import get_config
 import datetime
+from src.config import get_config
 
 logger = logging.getLogger(__name__)
 
