@@ -41,6 +41,7 @@ class Config:
     tushare_token: Optional[str] = None
     
     # === AI 分析配置 ===
+    ai_provider_priority: str = "gemini"  # AI 提供商优先级: "gemini" 或 "openai"
     gemini_api_key: Optional[str] = None
     gemini_model: str = "gemini-3-flash-preview"  # 主模型
     gemini_model_fallback: str = "gemini-2.5-flash"  # 备选模型
@@ -292,6 +293,7 @@ class Config:
             feishu_folder_token=os.getenv('FEISHU_FOLDER_TOKEN'),
             feishu_space_id=os.getenv('FEISHU_SPACE_ID'),
             tushare_token=os.getenv('TUSHARE_TOKEN'),
+            ai_provider_priority=os.getenv('AI_PROVIDER_PRIORITY', 'gemini').lower(),
             gemini_api_key=os.getenv('GEMINI_API_KEY'),
             gemini_model=os.getenv('GEMINI_MODEL', 'gemini-3-flash-preview'),
             gemini_model_fallback=os.getenv('GEMINI_MODEL_FALLBACK', 'gemini-2.5-flash'),
