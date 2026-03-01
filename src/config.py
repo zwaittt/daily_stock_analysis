@@ -455,7 +455,6 @@ class Config:
             feishu_folder_token=os.getenv('FEISHU_FOLDER_TOKEN'),
             feishu_space_id=os.getenv('FEISHU_SPACE_ID'),
             tushare_token=os.getenv('TUSHARE_TOKEN'),
-            ai_provider_priority=os.getenv('AI_PROVIDER_PRIORITY', 'gemini').lower(),
             litellm_model=litellm_model,
             litellm_fallback_models=litellm_fallback_models,
             gemini_api_keys=gemini_api_keys,
